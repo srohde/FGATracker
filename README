@@ -3,6 +3,8 @@ Flex/AIR Google Analytics Tracker library
 Flash Builder (Flex 4) library project
 The library is supposed to be used in combination with the Swiz framework: http://swizframework.org
 
+API docs: http://srohde.github.com/fgatracker/
+
 USAGE
 
 Add FGATracker to your Swiz BeanLoader
@@ -10,10 +12,8 @@ Add FGATracker to your Swiz BeanLoader
 
 dispatch TrackPageEvent or TrackActionEvent on Swiz event bus:
 
-<pre>
 _dispatcher.dispatchEvent( new TrackPageEvent( TrackPageEvent.PAGE, "/pagename" ) );
 _dispatcher.dispatchEvent( new TrackActionEvent( TrackActionEvent.ACTION, "category", "action", "label" ) );
-</pre>
 
 _dipatcher is a reference to the Swiz event bus event dispatcher.
 If you dispatch from a view set bubbles to true.
