@@ -29,14 +29,28 @@ package com.soenkerohde.ga {
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	
+	/**
+	 * Add FGATracker to your Swiz BeanLoader:
+	 *
+	 * &lt;ga:FGATracker id="fgaTracker" account="[GOOGLE ANALYTICS ID]" xmlns:ga="com.soenkerohde.ga.*" /&gt;
+	 */
+	
 	public class FGATracker {
 		
 		private static const LOG:ILogger = Log.getLogger( "FGATracker" );
 		
 		protected var tracker:GATracker;
 		
+		/**
+		 * @private
+		 */
 		protected var _account:String;
 		
+		/**
+		 * Google Analytics account ID
+		 * @param account
+		 *
+		 */
 		public function set account( account : String ) : void {
 			_account = account;
 		}
@@ -45,6 +59,9 @@ package com.soenkerohde.ga {
 			FlexGlobals.topLevelApplication.addEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function creationCompleteHandler( event : FlexEvent ) : void {
 			FlexGlobals.topLevelApplication.removeEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
 			if ( _account != null ) {
@@ -55,12 +72,27 @@ package com.soenkerohde.ga {
 			}
 		}
 		
+		/**
+		 * Tracks a page view.<br/>
+		 * Can be called manually.
+		 * Mediates @see com.soenkerohde.ga.event.TrackPageEvent TrackPageEvent
+		 * @param page Page tracking id
+		 */
 		[Mediate(event="com.soenkerohde.ga.event.TrackPageEvent.PAGE", properties="page")]
 		public function trackPage( page : String ) : void {
 			LOG.info( "trackPage " + page );
 			tracker.trackPageview( page );
 		}
 		
+		/**
+		 * Tracks an action.<br/>
+		 * Can be called manually.
+		 * Mediates @see com.soenkerohde.ga.event.TrackActionEvent TrackActionEvent
+		 * @param category
+		 * @param action
+		 * @param label
+		 * @param value
+		 */
 		[Mediate(event="com.soenkerohde.ga.event.TrackActionEvent.ACTION", properties="category,action,label,value")]
 		public function trackAction( category : String, action : String, label : String, value : Number ) : void {
 			LOG.info( "trackAction " + category + ", " + action + ", " + label + ", " + value );

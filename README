@@ -6,9 +6,7 @@ The library is supposed to be used in combination with the Swiz framework: http:
 USAGE
 
 Add FGATracker to your Swiz BeanLoader
-<pre>
 <ga:FGATracker id="fgaTracker" account="[GOOGLE ANALYTICS ID]" xmlns:ga="com.soenkerohde.ga.*" />
-</pre>
 
 dispatch TrackPageEvent or TrackActionEvent on Swiz event bus:
 

@@ -26,9 +26,21 @@ package com.soenkerohde.ga.event {
 		
 		public static const ACTION:String = "TrackActionEvent.ACTION";
 		
+		/**
+		 * @private
+		 */
 		private var _category:String;
+		/**
+		 * @private
+		 */
 		private var _action:String;
+		/**
+		 * @private
+		 */
 		private var _label:String;
+		/**
+		 * @private
+		 */
 		private var _value:Number;
 		
 		public function get category() : String {
