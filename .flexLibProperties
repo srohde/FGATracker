@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties includeAllClasses="true" version="3">
+  <includeClasses>
+    <classEntry path="com.soenkerohde.ga.FGATracker"/>
+    <classEntry path="com.soenkerohde.ga.event.TrackPageEvent"/>
+    <classEntry path="com.soenkerohde.ga.event.TrackActionEvent"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
