@@ -7,7 +7,7 @@ USAGE
 
 Add FGATracker to your Swiz BeanLoader
 <pre>
-<ga:FGATracker id="fgaTracker" account="UA-11431550-1" xmlns:ga="com.soenkerohde.ga.*" />
+<ga:FGATracker id="fgaTracker" account="[GOOGLE ANALYTICS ID]" xmlns:ga="com.soenkerohde.ga.*" />
 </pre>
 
 dispatch TrackPageEvent or TrackActionEvent on Swiz event bus:
@@ -19,4 +19,4 @@ _dispatcher.dispatchEvent( new TrackActionEvent( TrackActionEvent.ACTION, "categ
 
 _dipatcher is a reference to the Swiz event bus event dispatcher.
 If you dispatch from a view set bubbles to true.
-If you dispatch frmo a non-view class: http://swizframework.org/docs/event-handling/#non_view
+If you dispatch from a non-view class: http://swizframework.org/docs/event-handling/#non_view
