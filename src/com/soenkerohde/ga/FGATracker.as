@@ -21,9 +21,13 @@
  */
 package com.soenkerohde.ga {
 	import com.google.analytics.GATracker;
+	import com.soenkerohde.ga.event.TrackActionEvent;
+	import com.soenkerohde.ga.event.TrackPageEvent;
 	
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	
+	import mx.core.Application;
 	import mx.core.FlexGlobals;
 	import mx.events.FlexEvent;
 	import mx.logging.ILogger;
@@ -47,6 +51,11 @@ package com.soenkerohde.ga {
 		protected var _account:String;
 		
 		/**
+		 * @private
+		 */
+		protected var _unTracked:Array;
+		
+		/**
 		 * Google Analytics account ID
 		 * @param account
 		 *
@@ -56,19 +65,45 @@ package com.soenkerohde.ga {
 		}
 		
 		public function FGATracker() {
-			FlexGlobals.topLevelApplication.addEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
+			if ( CONFIG::flex4 ) {
+				FlexGlobals.topLevelApplication.addEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
+			} else {
+				Application.application.addEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
+			}
 		}
 		
 		/**
 		 * @private
 		 */
 		protected function creationCompleteHandler( event : FlexEvent ) : void {
-			FlexGlobals.topLevelApplication.removeEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
-			if ( _account != null ) {
-				var display:DisplayObject = FlexGlobals.topLevelApplication as DisplayObject;
-				tracker = new GATracker( display, _account );
-			} else {
+			if ( _account == null ) {
 				throw new Error( "Google Analytics account not set." );
+			} else {
+				
+				var display:DisplayObject;
+				
+				if ( CONFIG::flex4 ) {
+					FlexGlobals.topLevelApplication.removeEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
+					display = FlexGlobals.topLevelApplication as DisplayObject;
+				} else {
+					Application.application.removeEventListener( FlexEvent.CREATION_COMPLETE, creationCompleteHandler );
+					display = Application.application as DisplayObject;
+				}
+				tracker = new GATracker( display, _account );
+				
+				if ( _unTracked != null ) {
+					for each ( var e : Event in _unTracked ) {
+						if ( e is TrackPageEvent ) {
+							trackPage( e as TrackPageEvent );
+						} else if ( e is TrackActionEvent ) {
+							trackAction( e as TrackActionEvent );
+						} else {
+							throw new Error( "Unknown event type " + e.type );
+						}
+					}
+					
+					_unTracked = null;
+				}
 			}
 		}
 		
@@ -78,10 +113,16 @@ package com.soenkerohde.ga {
 		 * Mediates @see com.soenkerohde.ga.event.TrackPageEvent TrackPageEvent
 		 * @param page Page tracking id
 		 */
-		[Mediate(event="com.soenkerohde.ga.event.TrackPageEvent.PAGE", properties="page")]
-		public function trackPage( page : String ) : void {
-			LOG.info( "trackPage " + page );
-			tracker.trackPageview( page );
+		[Mediate(event="com.soenkerohde.ga.event.TrackPageEvent.PAGE")]
+		public function trackPage( event : TrackPageEvent ) : void {
+			
+			if ( tracker != null ) {
+				LOG.info( "trackPage " + event.page );
+				tracker.trackPageview( event.page );
+			} else {
+				_unTracked ||= [];
+				_unTracked.push( event );
+			}
 		}
 		
 		/**
@@ -93,10 +134,15 @@ package com.soenkerohde.ga {
 		 * @param label
 		 * @param value
 		 */
-		[Mediate(event="com.soenkerohde.ga.event.TrackActionEvent.ACTION", properties="category,action,label,value")]
-		public function trackAction( category : String, action : String, label : String, value : Number ) : void {
-			LOG.info( "trackAction " + category + ", " + action + ", " + label + ", " + value );
-			tracker.trackEvent( category, action, label, value );
+		[Mediate(event="com.soenkerohde.ga.event.TrackActionEvent.ACTION")]
+		public function trackAction( event : TrackActionEvent ) : void {
+			if ( tracker != null ) {
+				LOG.info( "trackAction " + event.category + ", " + event.action + ", " + event.label + ", " + event.value );
+				tracker.trackEvent( event.category, event.action, event.label, event.value );
+			} else {
+				_unTracked ||= [];
+				_unTracked.push( event );
+			}
 		}
 	
 	
